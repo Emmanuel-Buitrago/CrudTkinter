@@ -8,11 +8,11 @@ class Product:
     db_name = 'database.db'
 
     def __init__(self, window):
-        # Initializations 
+        # Initializations
         self.wind = window
         self.wind.title('Products Application')
 
-        # Creating a Frame Container 
+        # Creating a Frame Container
         frame = LabelFrame(self.wind, text = 'Register new Product')
         frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)
 
@@ -27,10 +27,10 @@ class Product:
         self.price = Entry(frame)
         self.price.grid(row = 2, column = 1)
 
-        # Button Add Product 
+        # Button Add Product
         ttk.Button(frame, text = 'Save Product', command = self.add_product).grid(row = 3, columnspan = 2, sticky = W + E)
 
-        # Output Messages 
+        # Output Messages
         self.message = Label(text = '', fg = 'red')
         self.message.grid(row = 3, column = 0, columnspan = 2, sticky = W + E)
 
@@ -57,7 +57,7 @@ class Product:
 
     # Get Products from Database
     def get_products(self):
-        # cleaning Table 
+        # cleaning Table
         records = self.tree.get_children()
         for element in records:
             self.tree.delete(element)
@@ -69,19 +69,30 @@ class Product:
             self.tree.insert('', 0, text = row[1], values = row[2])
 
     # User Input Validation
-    def validation(self):
-        return len(self.name.get()) != 0 and len(self.price.get()) != 0
+    def validationFieldName(self):
+        return len(self.name.get()) != 0
+
+    def validationFieldPrice(self):
+        return len(self.price.get()) != 0
+
+    def validationFormatPrice(self):
+        getPrice = self.price.get()
+        return isinstance(getPrice, float)
 
     def add_product(self):
-        if self.validation():
+        if self.validationFieldName() == False:
+            self.message['text'] = 'Name is Required'
+        elif self.validationFieldPrice() == False:
+            self.message['text'] = 'Price is Required'
+        elif self.validationFormatPrice() == False:
+            self.message['text'] = 'Price is Required in float format '
+        else:
             query = 'INSERT INTO product VALUES(NULL, ?, ?)'
             parameters =  (self.name.get(), self.price.get())
             self.run_query(query, parameters)
             self.message['text'] = 'Product {} added Successfully'.format(self.name.get())
             self.name.delete(0, END)
             self.price.delete(0, END)
-        else:
-            self.message['text'] = 'Name and Price is Required'
         self.get_products()
 
     def delete_product(self):
@@ -113,15 +124,15 @@ class Product:
         Label(self.edit_wind, text = 'Old Name:').grid(row = 0, column = 1)
         Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = name), state = 'readonly').grid(row = 0, column = 2)
         # New Name
-        Label(self.edit_wind, text = 'New Price:').grid(row = 1, column = 1)
+        Label(self.edit_wind, text = 'New Name:').grid(row = 1, column = 1)
         new_name = Entry(self.edit_wind)
         new_name.grid(row = 1, column = 2)
 
-        # Old Price 
+        # Old Price
         Label(self.edit_wind, text = 'Old Price:').grid(row = 2, column = 1)
         Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_price), state = 'readonly').grid(row = 2, column = 2)
         # New Price
-        Label(self.edit_wind, text = 'New Name:').grid(row = 3, column = 1)
+        Label(self.edit_wind, text = 'New Price:').grid(row = 3, column = 1)
         new_price= Entry(self.edit_wind)
         new_price.grid(row = 3, column = 2)
 
